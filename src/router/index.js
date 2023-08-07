@@ -16,6 +16,17 @@ const routes = [
       },
     ],
   },
+  {
+    path: '/event-archive',
+    component: () => import('@/layouts/default/Default.vue'),
+    children: [
+      {
+        path: '',
+        name: 'Home',
+        component: () => import(/* webpackChunkName: "home" */ '@/views/Home.vue'),
+      },
+    ],
+  },
 ]
 
 const router = createRouter({
