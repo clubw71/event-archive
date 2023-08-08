@@ -3,7 +3,7 @@
     <v-app-bar flat class="toolbar">
       <v-app-bar-title>
         <v-row no-gutters align="center" class="ml-n9">
-          <v-col cols="2">
+          <v-col cols="8" sm="6" md="4" lg="2">
             <v-text-field
               v-model="query"
               placeholder="Suche"
@@ -18,7 +18,7 @@
               @input="handleSearchInput"
             />
           </v-col>
-          <v-col cols="2">
+          <v-col cols="4" sm="6" md="8" lg="2">
             <span class="text-caption ml-2">
               {{ resultsText }}
             </span>
@@ -30,12 +30,14 @@
       :items="yearItems"
       :sizeFct="yearSizeFct"
       :titleFct="(name) => name"
+      :class="timelineClasses"
     >
       <template v-slot:item="{ item }">
         <Timeline
           :items="item.items"
           :sizeFct="monthSizeFct"
           :titleFct="getMonthName"
+          :class="timelineClasses"
         >
           <template v-slot:item="{ item }">
             <v-list lines="one">
@@ -44,15 +46,15 @@
                 :key="'e' + e_idx"
               >
                 <v-row justify="start">
-                  <v-col cols="3">
+                  <v-col cols="12" sm="4" md="3" class="text-no-wrap">
                     {{ event.day + '.' + event.month + '.' + event.year }}
                   </v-col>
-                  <v-col cols="3" class="d-flex justify-start">
+                  <v-col cols="12" sm="4" md="3" class="d-flex justify-start text-no-wrap">
                     <b>
                       {{ event.type }}
                     </b>
                   </v-col>
-                  <v-col class="justify-start">
+                  <v-col cols="12" sm="4" md="3" class="justify-start">
                     {{ event.title }}
                     <br>
                     <span class="font-italic text-caption">
@@ -60,6 +62,7 @@
                     </span>
                   </v-col>
                 </v-row>
+                <v-divider class="mt-2" />
               </v-list-item>
             </v-list>
           </template>
@@ -71,6 +74,7 @@
 
 <script setup>
   import { ref, computed, watch } from 'vue'
+  import { useDisplay } from 'vuetify'
   import Timeline from './Timeline'
 
   const props = defineProps({
@@ -80,6 +84,8 @@
 
   const emit = defineEmits(['search'])
 
+  const { smAndDown, xs } = useDisplay()
+  const isSmall = ref(smAndDown)
   const query = ref()
   let searchTimeout
 
@@ -91,6 +97,11 @@
     return `${numberSearchFilterResults} Ergebnisse`
   })
 
+  const timelineClasses = computed(() => {
+    return {
+      'ml-n12': isSmall.value
+    }
+  })
 
   function yearSizeFct (item) {
     return item.items.reduce((acc, m_item) => acc += m_item.items.length, 0)
