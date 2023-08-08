@@ -44,17 +44,18 @@
               <v-list-item
                 v-for="(event, e_idx) of item.items"
                 :key="'e' + e_idx"
+                class="px-1"
               >
-                <v-row justify="start">
-                  <v-col cols="12" sm="4" md="3" class="text-no-wrap">
+                <v-row justify="start" no-gutters>
+                  <v-col cols="12" sm="4" md="3" class="py-1 text-no-wrap">
                     {{ event.day + '.' + event.month + '.' + event.year }}
                   </v-col>
-                  <v-col cols="12" sm="4" md="3" class="d-flex justify-start text-no-wrap">
+                  <v-col cols="12" sm="4" md="3" class="py-1 d-flex justify-start text-no-wrap">
                     <b>
                       {{ event.type }}
                     </b>
                   </v-col>
-                  <v-col cols="12" sm="4" md="3" class="justify-start">
+                  <v-col cols="12" sm="4" md="6" class="py-1 justify-start">
                     {{ event.title }}
                     <br>
                     <span class="font-italic text-caption">
@@ -62,7 +63,7 @@
                     </span>
                   </v-col>
                 </v-row>
-                <v-divider class="mt-2" />
+                <v-divider v-if="isSmall" class="mt-2" />
               </v-list-item>
             </v-list>
           </template>
