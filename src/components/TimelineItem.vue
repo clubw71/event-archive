@@ -1,6 +1,7 @@
 <template>
   <v-timeline-item
     :size="size"
+    :dot-color="dotColor"
   >
     <v-card flat>
       <v-card-title

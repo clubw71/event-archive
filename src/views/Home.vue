@@ -2,6 +2,7 @@
   <ArchiveTimeline
     :items="filteredItems"
     :searchIndex="searchIndex"
+    :searchTerms="searchTerms"
     :searchFilterResults="searchFilter.result"
     @search="handleSearchInput"
   />
@@ -19,6 +20,7 @@
   import { onMounted, ref, reactive, computed, watch } from 'vue'
 
   let searchIndex = ref()
+  let searchTerms = ref([])
   let searchFilter = reactive({ result: [] })
 
   const filteredItems = computed(() => {
@@ -77,8 +79,16 @@
     return index
   }
 
+  function prepareSearchTerms (index) {
+    const allTerms = index.map.reduce((acc, item) => [...acc, ...Object.keys(item)], [])
+    const searchTerms = [...new Set(allTerms)]
+    searchTerms.sort()
+    return searchTerms
+  }
+
   onMounted(async () => {
     searchIndex = await importIndex()
+    searchTerms = prepareSearchTerms(searchIndex)
   })
 
   function handleSearchInput (query) {

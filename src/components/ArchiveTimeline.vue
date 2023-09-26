@@ -4,8 +4,9 @@
       <v-app-bar-title>
         <v-row no-gutters align="center" class="ml-n9">
           <v-col cols="8" sm="6" md="4" lg="2">
-            <v-text-field
+            <v-combobox
               v-model="query"
+              :items="searchTerms"
               placeholder="Suche"
               class="filter-row"
               prepend-icon="search"
@@ -15,7 +16,7 @@
               hide-details
               density="compact"
               @click:clear="handleSearchInput"
-              @input="handleSearchInput"
+              @update:search="handleSearchInput"
             />
           </v-col>
           <v-col cols="4" sm="6" md="8" lg="2">
@@ -28,14 +29,14 @@
     </v-app-bar>
     <Timeline
       :items="yearItems"
-      :sizeFct="yearSizeFct"
+      :colorFct="yearColorFct"
       :titleFct="(name) => name"
       :class="timelineClasses"
     >
       <template v-slot:item="{ item }">
         <Timeline
           :items="item.items"
-          :sizeFct="monthSizeFct"
+          :colorFct="monthColorFct"
           :titleFct="getMonthName"
           :class="timelineClasses"
         >
@@ -80,6 +81,8 @@
 
   const props = defineProps({
     items: Array,
+    searchIndex: Object,
+    searchTerms: Array,
     searchFilterResults: Array
   })
 
@@ -87,10 +90,12 @@
 
   const { smAndDown, xs } = useDisplay()
   const isSmall = ref(smAndDown)
-  const query = ref()
+  let query = ref()
   let searchTimeout
 
   const yearItems = computed(() => props.items)
+  const searchTerms = computed(() => props.searchTerms)
+
   const resultsText = computed(() => {
     const numberSearchFilterResults = props.searchFilterResults?.length
     if (!query.value) return ''
@@ -104,12 +109,55 @@
     }
   })
 
-  function yearSizeFct (item) {
-    return item.items.reduce((acc, m_item) => acc += m_item.items.length, 0)
+  const maxYearEvents = computed(() => {
+    return props.items.reduce((acc, yearData) => {
+      const eventsCount = getEventCountForYear(yearData)
+      if (acc < eventsCount) {
+        return eventsCount
+      }
+      return acc
+    }, 0)
+  })
+  
+  const maxMonthEvents = computed(() => {
+    return props.items.reduce((acc, yearData) => {
+      for (const monthData of yearData.items) {
+        if (acc < monthData.items.length) {
+          return monthData.items.length
+        }
+      }
+      return acc
+    }, 0)
+  })
+
+  function getEventCountForYear (yearData) {
+    return yearData.items.reduce((acc, monthData) => {
+      return acc + getEventCountForMonth(monthData)
+    }, 0)
   }
 
-  function monthSizeFct (item) {
-    return item.items?.length * 5
+  function getEventCountForMonth (monthData) {
+    return monthData.items.length
+  }
+
+  function heatMapColorForValue (value) {
+    const sat = value * 100
+    const light = (1 - value) * 100
+    return `hsl(40, ${sat}%, ${light}%)`
+  }
+
+  function yearColorFct (item) {
+    const eventsCount = getEventCountForYear(item)
+    const ratio = eventsCount / maxYearEvents.value
+    const color = heatMapColorForValue(ratio)
+    return color
+  }
+
+  function monthColorFct (item) {
+    const eventsCount = getEventCountForMonth(item)
+    const ratio = eventsCount / maxMonthEvents.value
+    const color = heatMapColorForValue(ratio)
+    return color
   }
 
   function getMonthName (month) {

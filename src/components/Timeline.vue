@@ -9,7 +9,7 @@
         :key="index"
         :item="item"
         :activeItem="refActiveItem"
-        :size="sizeFct(item)"
+        :dotColor="colorFct(item)"
         :titleFct="titleFct"
         @select="handleSelect"
       >
@@ -24,7 +24,7 @@
   import TimelineItem from './TimelineItem'
   const props = defineProps({
     items: Array,
-    sizeFct: Function,
+    colorFct: Function,
     titleFct: Function
   })
 
