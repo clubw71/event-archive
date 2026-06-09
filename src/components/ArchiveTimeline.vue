@@ -1,5 +1,8 @@
 <template>
-  <v-container class="fill-height">
+  <v-container
+    class="fill-height"
+    :class="smRmPaddingClasses"
+  >
     <v-app-bar flat class="toolbar">
       <v-app-bar-title>
         <v-row no-gutters align="center" class="ml-n9">
@@ -31,14 +34,14 @@
       :items="yearItems"
       :colorFct="yearColorFct"
       :titleFct="(name) => name"
-      :class="timelineClasses"
+      :class="smRmPaddingClasses"
     >
       <template v-slot:item="{ item }">
         <Timeline
           :items="item.items"
           :colorFct="monthColorFct"
           :titleFct="getMonthName"
-          :class="timelineClasses"
+          :class="smRmPaddingClasses"
         >
           <template v-slot:item="{ item }">
             <v-list lines="one">
@@ -88,7 +91,7 @@
 
   const emit = defineEmits(['search'])
 
-  const { smAndDown, xs } = useDisplay()
+  const { smAndDown } = useDisplay()
   const isSmall = ref(smAndDown)
   let query = ref()
   let searchTimeout
@@ -103,9 +106,9 @@
     return `${numberSearchFilterResults} Ergebnisse`
   })
 
-  const timelineClasses = computed(() => {
+  const smRmPaddingClasses = computed(() => {
     return {
-      'ml-n12': isSmall.value
+      'px-0': isSmall.value
     }
   })
 
@@ -181,5 +184,9 @@
 <style lang="css" scoped>
   .toolbar {
     border-bottom: 1px #efefef solid 
+  }
+
+  .timeline-wrapper {
+    width: 100vw
   }
 </style>

@@ -31,14 +31,14 @@
     const filtered = []
     for (const filter of searchFilter.result) {
       const [year, month, index] = filter.split('-')
-      const targetItem = items.find(i1 => i1.year === year).items.find(i2 => i2.month === month).items[parseInt(index)]
+      const targetItem = items.find(i1 => +i1.year === +year).items.find(i2 => +i2.month === +month).items[parseInt(index)]
       filtered.push(targetItem)
     }
     const output = filtered.reduce((acc, item) => {
-      const idx = acc.findIndex(i => i.year === item.year)
+      const idx = acc.findIndex(i => +i.year === +item.year)
       if (~idx) {
         const yearItems = acc[idx].items
-        const m_idx = yearItems.findIndex(i => i.month === item.month)
+        const m_idx = yearItems.findIndex(i => +i.month === +item.month)
         if (~m_idx) {
           acc[idx].items[m_idx].items.push(item)
         } else {
@@ -92,6 +92,7 @@
   })
 
   function handleSearchInput (query) {
+    console.log('qu', query)
     searchFilter.result = searchIndex.search(query)
   }
 </script>
